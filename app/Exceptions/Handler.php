@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Response;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 
@@ -51,7 +52,7 @@ class Handler extends ExceptionHandler
         if($exception instanceof TokenBlacklistedException){
             return response(['error'=>'Token is Blocked']);
         }elseif($exception instanceof JWTException){
-            return response(['error'=>'Token is not Provided']);
+            return response(['error'=>'Token is not Provided'],Response::HTTP_BAD_REQUEST);
         }
         return parent::render($request, $exception);
     }

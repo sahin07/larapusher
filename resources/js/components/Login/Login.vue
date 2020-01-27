@@ -1,4 +1,5 @@
 <template>
+
   <v-form @submit.prevent="login">
     <v-container>
       <v-row>
@@ -38,7 +39,7 @@
        Sign Up
       </v-btn>
       </router-link>
-
+<div color="red" v-if="!form.valid">Wrong Email and Password</div>
     </v-container>
   </v-form>
 </template>
@@ -51,13 +52,23 @@ export default {
         form:{
             email:null,
             password:null,
-            valid:null
+            valid:true
         }
     }
     ),
+    created(){
+
+    },
     methods:{
        login(){
-            User.login(this.form);
+
+            User.login(this.form)
+            .then((res)=>{
+                 this.$store.dispatch('login',res);
+                  this.$router.push({ path: '/forum' })
+            }).catch((err)=>{
+                this.form.valid = err.response.errors
+            });
        }
     }
 

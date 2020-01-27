@@ -88,6 +88,11 @@ export default {
 
         }
     }),
+    created(){
+        if(User.isLoggedIn()){
+            this.$router.push({ name: 'forum' })
+        }
+    },
     methods:{
         signUp(){
              axios.post('/api/auth/signUp',this.form)
@@ -95,7 +100,7 @@ export default {
                 User.responseAfterLogin(res);
             })
             .catch((err) => {
-                console.log(err.response);
+                this.errors = err.response.data.errors;
             })
 
         }

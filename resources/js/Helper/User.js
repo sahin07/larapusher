@@ -1,32 +1,37 @@
 import Token from './Token';
 import Storage from './Storage'
 
+
 class User {
 
-    login(data) {
-        axios.post('/api/auth/login', data)
+    async login(data) {
+        return new Promise((resolve,reject)=>{
+            axios.post('/api/auth/login', data)
             .then((res) => {
-                this.responseAfterLogin(res);
+                resolve(res.data);
             })
             .catch((err) => {
-                console.log(err.response);
+                reject(err);
             })
+        });
+
     }
 
     responseAfterLogin(res) {
-        let accessToken = res.data.access_token;
-        let UserName = res.data.user;
-        if (Token.isValid(accessToken)) {
-            Storage.setToken(accessToken);
-            Storage.setUser(UserName);
-        }
+        let accessToken = res.access_token;
+        let UserName = res.user;
+        let userId = res.userID;
+        Storage.setToken(accessToken);
+        Storage.setUser(UserName);
+        Storage.setUserId(userId);
+
     }
 
 
     hasToken() {
         let payload = Storage.getToken();
         if (payload) {
-            return Token.isValid(payload) ? true : false;
+            return payload ? true : false;
         }
         return false;
     }
@@ -39,10 +44,12 @@ class User {
         return Storage.getUser();
     }
 
+    logOut(){
+        Storage.clear();
+    }
+
     id(){
-        let payload = Storage.getToken();
-        let token = Token.payload(payload);
-        return token.sub;
+       return Storage.getUserId();
     }
 
 }

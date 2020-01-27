@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\QuestionRequest;
 use App\Http\Resources\QuestionResource;
 use App\Question;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ class QuestionController extends Controller
 
     public function __construct()
     {
-        $this->middleware('JWT');
+        $this->middleware('JWT',['except'=>['index','show']]);
     }
     /**
      * Display a listing of the resource.
@@ -40,9 +41,11 @@ class QuestionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(QuestionRequest $request)
     {
-        //
+       $question = auth()->user()->question()->create($request->all());
+
+       return response(new QuestionResource($question));
     }
 
     /**
@@ -87,6 +90,7 @@ class QuestionController extends Controller
      */
     public function destroy(Question $question)
     {
-        //
+        $question->delete();
+       return response(['Deleted']);
     }
 }

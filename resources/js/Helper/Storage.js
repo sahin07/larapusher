@@ -8,6 +8,10 @@ class Storage{
         localStorage.setItem('user', user);
     }
 
+    setUserId(id){
+        localStorage.setItem('id', id);
+    }
+
     store(user,token){
         this.setToken(token);
         this.setUser(user);
@@ -23,6 +27,10 @@ class Storage{
 
     getUser(){
         return localStorage.getItem('user');
+    }
+
+    getUserId(){
+        return localStorage.getItem('id');
     }
 
 

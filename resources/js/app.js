@@ -12,10 +12,29 @@ import Vue from 'vue'
 import vuetify from './vuetify/'
 import router from './Router/'
 import User from './Helper/User'
+import Vuex from 'vuex'
+import appStore from './appStore'
+import VueSimplemde from 'vue-simplemde'
+
+
+const store = new Vuex.Store(appStore);
+
+router.beforeEach((to, from, next) => {
+    const isAuthenticated = store.state.isLoggedIn;
+
+    if (!isAuthenticated && to.path !== "/login" && to.path !== "/forum" && to.path !== "/signup"){
+        return  next('/login');
+    }else if(to.path == '/login' && isAuthenticated){
+        return  next('/forum');
+    }else{
+        next();
+    }
+
+  })
 
 window.User = User;
 
-console.log(User.isLoggedIn())
+window.EventBus = new Vue();
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -35,9 +54,12 @@ Vue.component('AppHome', require('./components/AppHome.vue').default);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+Vue.component('vue-simplemde', VueSimplemde)
+
 const app = new Vue({
     vuetify,
     router,
+    store,
     el: '#app',
 });
 
