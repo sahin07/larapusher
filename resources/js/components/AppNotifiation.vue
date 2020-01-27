@@ -45,6 +45,12 @@ export default {
         EventBus.$on('loadNotification',()=>{
              this.getNotification();
         });
+        Echo.private('App.User.' + User.id(),)
+        .notification((notification) => {
+            console.log(notification);
+           this.unreads.unshift(notification);
+           this.unreadCount++
+        });
     },
     methods: {
         getNotification(){

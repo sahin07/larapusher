@@ -16,6 +16,10 @@ import Vuex from 'vuex'
 import appStore from './appStore'
 import VueSimplemde from 'vue-simplemde'
 
+const token = localStorage.getItem('user-token')
+if (token) {
+  axios.defaults.headers.common['Authorization'] = token
+}
 
 const store = new Vuex.Store(appStore);
 

@@ -2235,6 +2235,13 @@ __webpack_require__.r(__webpack_exports__);
     EventBus.$on('loadNotification', function () {
       _this.getNotification();
     });
+    Echo["private"]('App.User.' + User.id()).notification(function (notification) {
+      console.log(notification);
+
+      _this.unreads.unshift(notification);
+
+      _this.unreadCount++;
+    });
   },
   methods: {
     getNotification: function getNotification() {
@@ -2685,10 +2692,15 @@ __webpack_require__.r(__webpack_exports__);
     destroy: function destroy() {
       var _this2 = this;
 
-      this.$store.commit("deleteQuestion", this.data.slug);
-      setTimeout(function () {
-        _this2.$router.push("/forum");
-      }, 2000);
+      this.$store.dispatch("deleteQuestion", this.data.slug).then(function (response) {
+        console.log(response);
+
+        _this2.$router.push({
+          path: '/forum'
+        });
+      })["catch"](function (err) {
+        console.log(err);
+      });
     },
     createReply: function createReply(token) {
       var _this3 = this;
@@ -125779,6 +125791,12 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 
 
+var token = localStorage.getItem('user-token');
+
+if (token) {
+  axios.defaults.headers.common['Authorization'] = token;
+}
+
 var store = new vuex__WEBPACK_IMPORTED_MODULE_4__["default"].Store(_appStore__WEBPACK_IMPORTED_MODULE_5__["default"]);
 _Router___WEBPACK_IMPORTED_MODULE_2__["default"].beforeEach(function (to, from, next) {
   var isAuthenticated = store.state.isLoggedIn;
@@ -125843,11 +125861,29 @@ __webpack_require__.r(__webpack_exports__);
   getters: {
     getUserId: function getUserId() {
       return state.userID;
+    },
+    getToken: function getToken(sate) {
+      return state.token;
     }
   },
   actions: {
     login: function login(context, payload) {
       context.commit('login', payload);
+    },
+    deleteQuestion: function deleteQuestion(_ref, slug) {
+      var commit = _ref.commit,
+          state = _ref.state;
+      return new Promise(function (resolve, reject) {
+        axios["delete"]("/api/question/".concat(slug), {
+          headers: {
+            Authorization: "Bearer ".concat(state.token)
+          }
+        }).then(function (res) {
+          resolve('succesfully Deleted');
+        })["catch"](function (err) {
+          reject(err);
+        });
+      });
     }
   },
   mutations: {
@@ -125857,19 +125893,6 @@ __webpack_require__.r(__webpack_exports__);
       state.token = payload.access_token;
       state.username = payload.user;
       state.UserId = payload.userID;
-    },
-    deleteQuestion: function deleteQuestion(state, slug) {
-      return new Promise(function (res, rej) {
-        axios["delete"]("/api/question/".concat(slug), {
-          headers: {
-            Authorization: "Bearer ".concat(state.token)
-          }
-        }).then(function (res) {
-          return res('succesfully Deleted');
-        })["catch"](function (err) {
-          return res(err);
-        });
-      });
     }
   }
 });

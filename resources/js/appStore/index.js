@@ -15,6 +15,9 @@ export default {
     getters:{
             getUserId(){
                 return state.userID
+            },
+            getToken(sate){
+                return state.token
             }
     },
     actions:{
@@ -22,6 +25,21 @@ export default {
         login(context,payload){
             context.commit('login',payload);
         },
+
+        deleteQuestion({ commit, state },slug){
+            return new Promise((resolve,reject)=>{
+                axios.delete(`/api/question/${slug}`,{
+                    headers:{
+                        Authorization:`Bearer ${state.token}`
+                    }
+                })
+                .then((res)=>{
+                    resolve('succesfully Deleted');
+                }).catch((err)=>{
+                     reject(err);
+                });
+            })
+        }
 
     },
     mutations:{
@@ -35,20 +53,7 @@ export default {
 
         },
 
-        deleteQuestion(state,slug){
-            return new Promise((res,rej)=>{
-                axios.delete(`/api/question/${slug}`,{
-                    headers:{
-                        Authorization:`Bearer ${state.token}`
-                    }
-                })
-                .then((res)=>{
-                   return res('succesfully Deleted');
-                }).catch((err)=>{
-                    return res(err)
-                });
-            })
-        }
+
 
     }
 

@@ -42,10 +42,13 @@ export default {
   },
   methods: {
     destroy() {
-      this.$store.commit("deleteQuestion", this.data.slug);
-      setTimeout(() => {
-        this.$router.push("/forum");
-      }, 2000);
+      this.$store.dispatch("deleteQuestion", this.data.slug)
+        .then((response)=>{
+            console.log(response);
+            this.$router.push({path:'/forum'});
+        }).catch((err)=>{
+            console.log(err);
+        })
     },
     createReply(token) {
       axios
